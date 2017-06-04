@@ -6,14 +6,14 @@ type VertexID string
 // EdgeID is string representation of an edge.
 type EdgeID string
 
-// Color is an a 3-element enum
+// Color is a 3-element enum
 // used to mark vertices during a visit.
 type Color uint8
 
 // Colors used to mark vertices during a visit:
-// - White means not discovered yet
-// - Gray means discovered but not examined yet
-// - Black means examined
+// White means not discovered yet,
+// Gray means discovered but not examined yet and
+// Black means examined
 const (
 	White Color = iota // default
 	Gray
