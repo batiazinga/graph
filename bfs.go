@@ -96,3 +96,21 @@ func BreadthFirstVisit(g Forward, source VertexID, vis BfsVisitor, colors Vertex
 }
 
 // TODO: Implement a Breadth-First Search which stops once the target has been found.
+
+// BfsVisitorNoOp returns a BfsVisitor which does nothing.
+// It can embedded in a custom BfsVisitor to avoid implementing all empty methods.
+func BfsVisitorNoOp() BfsVisitor {
+	return bfsVisitorNoOp{}
+}
+
+// bfsVisitorNoOp is a BfsVisitor which does nothing.
+type bfsVisitorNoOp struct{}
+
+func (v bfsVisitorNoOp) DiscoverVertex(VertexID) {}
+func (v bfsVisitorNoOp) ExamineVertex(VertexID)  {}
+func (v bfsVisitorNoOp) ExamineEdge(EdgeID)      {}
+func (v bfsVisitorNoOp) TreeEdge(EdgeID)         {}
+func (v bfsVisitorNoOp) NonTreeEdge(EdgeID)      {}
+func (v bfsVisitorNoOp) GrayTarget(VertexID)     {}
+func (v bfsVisitorNoOp) BlackTarget(VertexID)    {}
+func (v bfsVisitorNoOp) FinishVertex(VertexID)   {}
