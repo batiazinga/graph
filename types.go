@@ -1,11 +1,5 @@
 package graph
 
-// VertexID is a string representation of a vertex.
-type VertexID string
-
-// EdgeID is string representation of an edge.
-type EdgeID string
-
 // Color is a 3-element enum
 // used to mark vertices during a visit.
 type Color uint8
@@ -20,6 +14,6 @@ const (
 	Black
 )
 
-// VertexColorMap is a map from vertex to color.
-// The default color is white so missing is equivalent to white.
-type VertexColorMap map[VertexID]Color
+// ColorMap is a map from (vertex) id  to color.
+// The default color is white so missing id is equivalent to white.
+type ColorMap map[string]Color

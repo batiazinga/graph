@@ -8,12 +8,14 @@ import (
 
 // digraph is a directed graph implementing the Forward interface.
 type digraph struct {
-	vertices map[graph.VertexID][]graph.EdgeID
-	edges    map[graph.EdgeID]graph.VertexID
+	// map from vertices to out edges
+	vertices map[string][]string
+	// map from edges to target vertices
+	edges map[string]string
 }
 
-func (g digraph) OutEdges(v graph.VertexID) []graph.EdgeID                   { return g.vertices[v] }
-func (g digraph) NextVertex(v graph.VertexID, e graph.EdgeID) graph.VertexID { return g.edges[e] }
+func (g digraph) OutEdges(v string) []string    { return g.vertices[v] }
+func (g digraph) NextVertex(v, e string) string { return g.edges[e] }
 
 // bfsVisitorDistance computes the distance between the source and any reachable vertex.
 // The distance between two adjacent vertices is one.
@@ -22,14 +24,14 @@ type bfsVisitorDistance struct {
 
 	// vertex that is being examined
 	// it is initially the empty vertex
-	currentVertex graph.VertexID
+	currentVertex string
 	// map storing the distance between the source and other vertices
 	// it is initially full of -1
-	distance map[graph.VertexID]int
+	distance map[string]int
 }
 
-func (vis *bfsVisitorDistance) DiscoverVertex(v graph.VertexID) {
-	if string(vis.currentVertex) != "" {
+func (vis *bfsVisitorDistance) DiscoverVertex(v string) {
+	if vis.currentVertex != "" {
 		vis.distance[v] = vis.distance[vis.currentVertex] + 1
 
 	} else {
@@ -38,7 +40,7 @@ func (vis *bfsVisitorDistance) DiscoverVertex(v graph.VertexID) {
 		vis.distance[v] = 0
 	}
 }
-func (vis *bfsVisitorDistance) ExamineVertex(v graph.VertexID) {
+func (vis *bfsVisitorDistance) ExamineVertex(v string) {
 	vis.currentVertex = v
 }
 
@@ -47,19 +49,19 @@ func ExampleBreadthFirstVisit() {
 	// A -> B -> D
 	//   \-> C -- \-> E
 	g := digraph{
-		vertices: map[graph.VertexID][]graph.EdgeID{
-			graph.VertexID("A"): []graph.EdgeID{graph.EdgeID("AB"), graph.EdgeID("AC")},
-			graph.VertexID("B"): []graph.EdgeID{graph.EdgeID("BD")},
-			graph.VertexID("C"): []graph.EdgeID{graph.EdgeID("CE")},
-			graph.VertexID("D"): []graph.EdgeID{graph.EdgeID("DE")},
-			graph.VertexID("E"): nil,
+		vertices: map[string][]string{
+			"A": []string{"AB", "AC"},
+			"B": []string{"BD"},
+			"C": []string{"CE"},
+			"D": []string{"DE"},
+			"E": nil,
 		},
-		edges: map[graph.EdgeID]graph.VertexID{
-			graph.EdgeID("AB"): graph.VertexID("B"),
-			graph.EdgeID("AC"): graph.VertexID("C"),
-			graph.EdgeID("BD"): graph.VertexID("D"),
-			graph.EdgeID("CE"): graph.VertexID("E"),
-			graph.EdgeID("DE"): graph.VertexID("E"),
+		edges: map[string]string{
+			"AB": "B",
+			"AC": "C",
+			"BD": "D",
+			"CE": "E",
+			"DE": "E",
 		},
 	}
 
@@ -68,7 +70,7 @@ func ExampleBreadthFirstVisit() {
 	// and the distance map is initialized to -1 for all vertices
 	vis := &bfsVisitorDistance{
 		BfsVisitor: graph.BfsVisitorNoOp(),
-		distance:   make(map[graph.VertexID]int, len(g.vertices)),
+		distance:   make(map[string]int, len(g.vertices)),
 	}
 	for v := range g.vertices {
 		vis.distance[v] = -1
@@ -76,17 +78,17 @@ func ExampleBreadthFirstVisit() {
 
 	// init the color map
 	// it is empty and has enough space allocated for all vertices
-	colors := make(graph.VertexColorMap, len(g.vertices))
+	colors := make(graph.ColorMap, len(g.vertices))
 
 	// Run the breadth-first visit
-	graph.BreadthFirstVisit(g, graph.VertexID("A"), vis, colors)
+	graph.BreadthFirstVisit(g, "A", vis, colors)
 
 	// read results
-	fmt.Println("A", vis.distance[graph.VertexID("A")])
-	fmt.Println("B", vis.distance[graph.VertexID("B")])
-	fmt.Println("C", vis.distance[graph.VertexID("C")])
-	fmt.Println("D", vis.distance[graph.VertexID("D")])
-	fmt.Println("E", vis.distance[graph.VertexID("E")])
+	fmt.Println("A", vis.distance["A"])
+	fmt.Println("B", vis.distance["B"])
+	fmt.Println("C", vis.distance["C"])
+	fmt.Println("D", vis.distance["D"])
+	fmt.Println("E", vis.distance["E"])
 
 	// Output:
 	// A 0

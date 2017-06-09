@@ -7,31 +7,31 @@ import (
 // BfsVisitor is the visitor to be passed to BreadthFirstVisit graph traversal function.
 type BfsVisitor interface {
 	// DiscoverVertex is called when a new (white) vertex is found.
-	DiscoverVertex(v VertexID)
+	DiscoverVertex(v string)
 
 	// ExamineVertex is called when a vertex is dequeued.
-	ExamineVertex(v VertexID)
+	ExamineVertex(v string)
 
 	// ExamineEdge is called when navigating through the edge.
-	ExamineEdge(e EdgeID)
+	ExamineEdge(e string)
 
 	// TreeEdge is called when navigating to a new (white) vertex.
 	// This edge is then an edge of the minimum spanning tree
 	// (where the distance between two neighbour vertices is one).
-	TreeEdge(e EdgeID)
+	TreeEdge(e string)
 
 	// NonTreeEdge is called when navigating to an already discovered (gray or black) vertex.
-	NonTreeEdge(e EdgeID)
+	NonTreeEdge(e string)
 
 	// GrayTarget is called when the vertex we are navigating to has already been discovered
 	// but has been examined yet.
-	GrayTarget(v VertexID)
+	GrayTarget(v string)
 
 	// BlackTarget is called when the vertex we are navigating to has already been examined.
-	BlackTarget(v VertexID)
+	BlackTarget(v string)
 
 	// FinishVertex is called when a vertex has been examined.
-	FinishVertex(v VertexID)
+	FinishVertex(v string)
 }
 
 // BreadthFirstVisit visits a graph starting from the given source vertex
@@ -44,7 +44,7 @@ type BfsVisitor interface {
 // If the whole graph should be visited, the color map should contain only white vertices.
 // For performance reason, it should then be empty and have enough space allocated to contain all vertices.
 // To avoid visiting some parts of the graph, some vertices may be set to black.
-func BreadthFirstVisit(g Forward, source VertexID, vis BfsVisitor, colors VertexColorMap) {
+func BreadthFirstVisit(g Forward, source string, vis BfsVisitor, colors ColorMap) {
 	// queue implemented with a list
 	queue := list.New()
 
@@ -60,7 +60,7 @@ func BreadthFirstVisit(g Forward, source VertexID, vis BfsVisitor, colors Vertex
 		// and examine it
 		elv := queue.Front()
 		queue.Remove(elv)
-		v := elv.Value.(VertexID)
+		v := elv.Value.(string)
 		vis.ExamineVertex(v)
 
 		// visit neighbours
@@ -106,11 +106,11 @@ func BfsVisitorNoOp() BfsVisitor {
 // bfsVisitorNoOp is a BfsVisitor which does nothing.
 type bfsVisitorNoOp struct{}
 
-func (v bfsVisitorNoOp) DiscoverVertex(VertexID) {}
-func (v bfsVisitorNoOp) ExamineVertex(VertexID)  {}
-func (v bfsVisitorNoOp) ExamineEdge(EdgeID)      {}
-func (v bfsVisitorNoOp) TreeEdge(EdgeID)         {}
-func (v bfsVisitorNoOp) NonTreeEdge(EdgeID)      {}
-func (v bfsVisitorNoOp) GrayTarget(VertexID)     {}
-func (v bfsVisitorNoOp) BlackTarget(VertexID)    {}
-func (v bfsVisitorNoOp) FinishVertex(VertexID)   {}
+func (v bfsVisitorNoOp) DiscoverVertex(string) {}
+func (v bfsVisitorNoOp) ExamineVertex(string)  {}
+func (v bfsVisitorNoOp) ExamineEdge(string)    {}
+func (v bfsVisitorNoOp) TreeEdge(string)       {}
+func (v bfsVisitorNoOp) NonTreeEdge(string)    {}
+func (v bfsVisitorNoOp) GrayTarget(string)     {}
+func (v bfsVisitorNoOp) BlackTarget(string)    {}
+func (v bfsVisitorNoOp) FinishVertex(string)   {}
