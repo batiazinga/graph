@@ -4,6 +4,7 @@ package graph
 // The graph can directed or undirected.
 type Forward interface {
 	// OutEdges return the list of edges leaving the given vertex.
+	// TODO: replace this by a read-only iterator.
 	OutEdges(v string) []string
 
 	// NextVertex returns the vertex that can reached from vertex v and navigating along edge e.
