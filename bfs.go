@@ -6,52 +6,49 @@ import (
 
 // BfsVisitor is the visitor to be passed to BreadthFirstVisit graph traversal function.
 type BfsVisitor interface {
-	// DiscoverVertex is called when a new (white) vertex is found.
+	// DiscoverVertex is called when a new vertex is found.
 	DiscoverVertex(v string)
 
 	// ExamineVertex is called when a vertex is dequeued.
 	ExamineVertex(v string)
 
 	// ExamineEdge is called when navigating through the edge.
-	ExamineEdge(e string)
+	ExamineEdge(from, to string)
 
-	// TreeEdge is called when navigating to a new (white) vertex.
+	// TreeEdge is called when navigating to a new vertex.
 	// This edge is then an edge of the minimum spanning tree
 	// (where the distance between two neighbour vertices is one).
-	TreeEdge(e string)
+	TreeEdge(from, to string)
 
-	// NonTreeEdge is called when navigating to an already discovered (gray or black) vertex.
-	NonTreeEdge(e string)
+	// NonTreeEdge is called when navigating to an already discovered vertex.
+	NonTreeEdge(from, to string)
 
 	// GrayTarget is called when the vertex we are navigating to has already been discovered
-	// but has been examined yet.
-	GrayTarget(v string)
+	// but has not been examined yet.
+	GrayTarget(from, to string)
 
 	// BlackTarget is called when the vertex we are navigating to has already been examined.
-	BlackTarget(v string)
+	BlackTarget(from, to string)
 
 	// FinishVertex is called when a vertex has been examined.
 	FinishVertex(v string)
 }
 
-// BreadthFirstVisit visits a graph starting from the given source vertex
+// BreadthFirstVisit visits a graph starting from the source vertex
 // and visiting vertices that are closer first.
 //
 // At some event points the visitor is called.
 // An appropriate visitor can then compute shortest paths or precedence map.
-//
-// A vertex color map must be provided.
-// If the whole graph should be visited, the color map should contain only white vertices.
-// For performance reason, it should then be empty and have enough space allocated to contain all vertices.
-// To avoid visiting some parts of the graph, some vertices may be set to black.
-func BreadthFirstVisit(g Forward, source string, vis BfsVisitor, colors ColorMap) {
+func BreadthFirstVisit(g Forward, source string, vis BfsVisitor) {
 	// queue implemented with a list
 	queue := list.New()
+	// init color map
+	cmap := make(colorMap)
 
 	// discover the source vertex:
 	// it was white, it is now gray
 	vis.DiscoverVertex(source)
-	colors[source] = Gray
+	cmap[source] = gray    // mark as discovered
 	queue.PushBack(source) // enqueue
 
 	// visit
@@ -64,26 +61,24 @@ func BreadthFirstVisit(g Forward, source string, vis BfsVisitor, colors ColorMap
 		vis.ExamineVertex(v)
 
 		// visit neighbours
-		for _, e := range g.OutEdges(v) {
-			// leave vertex along edge e
-			// and examine it
-			vis.ExamineEdge(e)
+		for _, next := range g.NextVertices(v) {
+			// leave vertex v toward vertex next
+			// and examine the edge
+			vis.ExamineEdge(v, next)
 
-			// find next vertex
-			// and test if it has already been discovered
-			nextv := g.NextVertex(v, e)
-			if colors[nextv] == White {
+			// has next vertex already been discovered
+			if cmap[next] == white {
 				// vertex has not been discovered yet
-				vis.TreeEdge(e)
-				vis.DiscoverVertex(nextv)
-				colors[nextv] = Gray
-				queue.PushBack(nextv)
+				vis.TreeEdge(v, next)
+				vis.DiscoverVertex(next)
+				cmap[next] = gray    // mark as discovered
+				queue.PushBack(next) //enqueue
 			} else {
-				vis.NonTreeEdge(e)
-				if colors[nextv] == Gray {
-					vis.GrayTarget(v)
+				vis.NonTreeEdge(v, next)
+				if cmap[next] == gray {
+					vis.GrayTarget(v, next)
 				} else {
-					vis.BlackTarget(v)
+					vis.BlackTarget(v, next)
 				}
 			}
 		}
@@ -91,26 +86,20 @@ func BreadthFirstVisit(g Forward, source string, vis BfsVisitor, colors ColorMap
 		// All neighbours have been found
 		// There is nothing left to do with this vertex: turn it to black
 		vis.FinishVertex(v)
-		colors[v] = Black
+		cmap[v] = black
 	}
 }
 
 // TODO: Implement a Breadth-First Search which stops once the target has been found.
 
-// BfsVisitorNoOp returns a BfsVisitor which does nothing.
-// It can embedded in a custom BfsVisitor to avoid implementing all empty methods.
-func BfsVisitorNoOp() BfsVisitor {
-	return bfsVisitorNoOp{}
-}
+// BfsVisitorNoOp is a BfsVisitor which does nothing.
+type BfsVisitorNoOp struct{}
 
-// bfsVisitorNoOp is a BfsVisitor which does nothing.
-type bfsVisitorNoOp struct{}
-
-func (v bfsVisitorNoOp) DiscoverVertex(string) {}
-func (v bfsVisitorNoOp) ExamineVertex(string)  {}
-func (v bfsVisitorNoOp) ExamineEdge(string)    {}
-func (v bfsVisitorNoOp) TreeEdge(string)       {}
-func (v bfsVisitorNoOp) NonTreeEdge(string)    {}
-func (v bfsVisitorNoOp) GrayTarget(string)     {}
-func (v bfsVisitorNoOp) BlackTarget(string)    {}
-func (v bfsVisitorNoOp) FinishVertex(string)   {}
+func (v BfsVisitorNoOp) DiscoverVertex(string)      {}
+func (v BfsVisitorNoOp) ExamineVertex(string)       {}
+func (v BfsVisitorNoOp) ExamineEdge(string, string) {}
+func (v BfsVisitorNoOp) TreeEdge(string, string)    {}
+func (v BfsVisitorNoOp) NonTreeEdge(string, string) {}
+func (v BfsVisitorNoOp) GrayTarget(string, string)  {}
+func (v BfsVisitorNoOp) BlackTarget(string, string) {}
+func (v BfsVisitorNoOp) FinishVertex(string)        {}

@@ -7,37 +7,32 @@ import (
 )
 
 // digraph is a directed graph implementing the Forward interface.
-type digraph struct {
-	// map from vertices to out edges
-	vertices map[string][]string
-	// map from edges to target vertices
-	edges map[string]string
-}
+type digraph map[string][]string
 
-func (g digraph) OutEdges(v string) []string    { return g.vertices[v] }
-func (g digraph) NextVertex(v, e string) string { return g.edges[e] }
+func (g digraph) NextVertices(v string) []string { return g[v] }
 
 // bfsVisitorDistance computes the distance between the source and any reachable vertex.
 // The distance between two adjacent vertices is one.
 type bfsVisitorDistance struct {
-	graph.BfsVisitor
+	graph.BfsVisitorNoOp // bfsVisitorDistance implement BfsVisitor
 
 	// vertex that is being examined
 	// it is initially the empty vertex
 	currentVertex string
 	// map storing the distance between the source and other vertices
-	// it is initially full of -1
+	// it should initially be full of -1
 	distance map[string]int
 }
 
 func (vis *bfsVisitorDistance) DiscoverVertex(v string) {
-	if vis.currentVertex != "" {
-		vis.distance[v] = vis.distance[vis.currentVertex] + 1
-
-	} else {
+	if vis.currentVertex == "" {
 		// this is the beginning of the visit
 		// v is the source vertex so the distance is 0
 		vis.distance[v] = 0
+
+	} else {
+		// v is discovered from current vertex
+		vis.distance[v] = vis.distance[vis.currentVertex] + 1
 	}
 }
 func (vis *bfsVisitorDistance) ExamineVertex(v string) {
@@ -49,39 +44,26 @@ func ExampleBreadthFirstVisit() {
 	// A -> B -> D
 	//   \-> C -- \-> E
 	g := digraph{
-		vertices: map[string][]string{
-			"A": []string{"AB", "AC"},
-			"B": []string{"BD"},
-			"C": []string{"CE"},
-			"D": []string{"DE"},
-			"E": nil,
-		},
-		edges: map[string]string{
-			"AB": "B",
-			"AC": "C",
-			"BD": "D",
-			"CE": "E",
-			"DE": "E",
-		},
+		"A": []string{"B", "C"},
+		"B": []string{"D"},
+		"C": []string{"E"},
+		"D": []string{"E"},
+		"E": nil,
 	}
 
 	// create a distance visitor
 	// the current vertex is ""
 	// and the distance map is initialized to -1 for all vertices
 	vis := &bfsVisitorDistance{
-		BfsVisitor: graph.BfsVisitorNoOp(),
-		distance:   make(map[string]int, len(g.vertices)),
+		BfsVisitorNoOp: graph.BfsVisitorNoOp{},
+		distance:       make(map[string]int, len(g)),
 	}
-	for v := range g.vertices {
+	for v := range g {
 		vis.distance[v] = -1
 	}
 
-	// init the color map
-	// it is empty and has enough space allocated for all vertices
-	colors := make(graph.ColorMap, len(g.vertices))
-
 	// Run the breadth-first visit
-	graph.BreadthFirstVisit(g, "A", vis, colors)
+	graph.BreadthFirstVisit(g, "A", vis)
 
 	// read results
 	fmt.Println("A", vis.distance["A"])
