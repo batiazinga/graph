@@ -39,7 +39,7 @@ type BfsVisitor interface {
 //
 // At some event points the visitor is called.
 // An appropriate visitor can then compute shortest paths or precedence map.
-func BreadthFirstVisit(g Forward, source string, vis BfsVisitor) {
+func BreadthFirstVisit(g Forward, vis BfsVisitor, source string) {
 	// queue implemented with a list
 	queue := list.New()
 	// init color map
@@ -55,9 +55,9 @@ func BreadthFirstVisit(g Forward, source string, vis BfsVisitor) {
 	for queue.Len() != 0 {
 		// dequeue the front element
 		// and examine it
-		elv := queue.Front()
-		queue.Remove(elv)
-		v := elv.Value.(string)
+		elt := queue.Front()
+		queue.Remove(elt)
+		v := elt.Value.(string)
 		vis.ExamineVertex(v)
 
 		// visit neighbours
@@ -90,7 +90,7 @@ func BreadthFirstVisit(g Forward, source string, vis BfsVisitor) {
 	}
 }
 
-// TODO: Implement a Breadth-First Search which stops once the target has been found.
+// TODO: Implement a Breadth-First Search which stops once the target has been discovered.
 
 // BfsVisitorNoOp is a BfsVisitor which does nothing.
 type BfsVisitorNoOp struct{}

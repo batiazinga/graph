@@ -13,30 +13,18 @@ func (g digraph) NextVertices(v string) []string { return g[v] }
 
 // bfsVisitorDistance computes the distance between the source and any reachable vertex.
 // The distance between two adjacent vertices is one.
+//
+// Beware that distance from source vertex to non-reachable vertices is zero with this visitor.
 type bfsVisitorDistance struct {
 	graph.BfsVisitorNoOp // bfsVisitorDistance implement BfsVisitor
 
-	// vertex that is being examined
-	// it is initially the empty vertex
-	currentVertex string
 	// map storing the distance between the source and other vertices
-	// it should initially be full of -1
+	// it should initially be empty
 	distance map[string]int
 }
 
-func (vis *bfsVisitorDistance) DiscoverVertex(v string) {
-	if vis.currentVertex == "" {
-		// this is the beginning of the visit
-		// v is the source vertex so the distance is 0
-		vis.distance[v] = 0
-
-	} else {
-		// v is discovered from current vertex
-		vis.distance[v] = vis.distance[vis.currentVertex] + 1
-	}
-}
-func (vis *bfsVisitorDistance) ExamineVertex(v string) {
-	vis.currentVertex = v
+func (vis *bfsVisitorDistance) TreeEdge(from, to string) {
+	vis.distance[to] = vis.distance[from] + 1
 }
 
 func ExampleBreadthFirstVisit() {
@@ -52,18 +40,13 @@ func ExampleBreadthFirstVisit() {
 	}
 
 	// create a distance visitor
-	// the current vertex is ""
-	// and the distance map is initialized to -1 for all vertices
 	vis := &bfsVisitorDistance{
 		BfsVisitorNoOp: graph.BfsVisitorNoOp{},
-		distance:       make(map[string]int, len(g)),
-	}
-	for v := range g {
-		vis.distance[v] = -1
+		distance:       make(map[string]int),
 	}
 
 	// Run the breadth-first visit
-	graph.BreadthFirstVisit(g, "A", vis)
+	graph.BreadthFirstVisit(g, vis, "A")
 
 	// read results
 	fmt.Println("A", vis.distance["A"])
