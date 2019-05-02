@@ -80,7 +80,9 @@ func DepthFirstVisit(g VertexListForward, vis DfsVisitor) {
 	cmap := make(colorMap)
 	// visit vertices and start a depth-first-visit from each one of them
 	for _, v := range g.Vertices() {
-		depthFirstVisitFrom(g, vis, cmap, v)
+		if cmap[v] == white {
+			depthFirstVisitFrom(g, vis, cmap, v)
+		}
 
 	}
 }

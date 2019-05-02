@@ -36,7 +36,6 @@ func ExampleBreadthFirstVisit() {
 		"B": []string{"D"},
 		"C": []string{"E"},
 		"D": []string{"E"},
-		"E": nil,
 	}
 
 	// create a distance visitor
