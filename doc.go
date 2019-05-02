@@ -6,7 +6,7 @@ It is inspired by the C++ Boost Graph Library.
 Visit:
 
   - breadth-first visit
-  - depth-first visit (TODO)
+  - depth-first visit
 
 Shortest distance:
 
