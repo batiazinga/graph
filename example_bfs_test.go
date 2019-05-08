@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/batiazinga/graph"
+	"github.com/batiazinga/graph/visitor"
 )
 
 // digraph is a directed graph implementing the Forward interface.
@@ -16,7 +17,7 @@ func (g digraph) NextVertices(v string) []string { return g[v] }
 //
 // Beware that distance from source vertex to non-reachable vertices is zero with this visitor.
 type bfsVisitorDistance struct {
-	graph.BfsVisitorNoOp // bfsVisitorDistance implement BfsVisitor
+	visitor.BfsNoOp // bfsVisitorDistance implement BfsVisitor
 
 	// map storing the distance between the source and other vertices
 	// it should initially be empty
@@ -40,8 +41,8 @@ func ExampleBreadthFirstVisit() {
 
 	// create a distance visitor
 	vis := &bfsVisitorDistance{
-		BfsVisitorNoOp: graph.BfsVisitorNoOp{},
-		distance:       make(map[string]int),
+		BfsNoOp:  visitor.BfsNoOp{},
+		distance: make(map[string]int),
 	}
 
 	// Run the breadth-first visit

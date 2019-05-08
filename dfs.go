@@ -86,14 +86,3 @@ func DepthFirstVisit(g VertexListForward, vis DfsVisitor) {
 
 	}
 }
-
-// DfsVisitorNoOp is a DfsVisitor which does nothing.
-type DfsVisitorNoOp struct{}
-
-func (v DfsVisitorNoOp) InitializeVertex(string)         {}
-func (v DfsVisitorNoOp) DiscoverVertex(string)           {}
-func (v DfsVisitorNoOp) ExamineEdge(string, string)      {}
-func (v DfsVisitorNoOp) TreeEdge(string, string)         {}
-func (v DfsVisitorNoOp) BackEdge(string, string)         {}
-func (v DfsVisitorNoOp) ForwardCrossEdge(string, string) {}
-func (v DfsVisitorNoOp) FinishVertex(string)             {}

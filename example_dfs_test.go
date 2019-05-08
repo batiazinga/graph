@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/batiazinga/graph"
+	"github.com/batiazinga/graph/visitor"
 )
 
 // vertexListDAG is a directed graph implementing the VertexListForward interface.
@@ -29,7 +30,7 @@ func (g vertexListDAG) Vertices() []string {
 // toposortVisitor computes a topological ordering of a graph.
 // It is a DfsVisitor
 type toposortVisitor struct {
-	graph.DfsVisitorNoOp // toposortVisitor implement BfsVisitor
+	visitor.DfsNoOp // toposortVisitor implement BfsVisitor
 
 	// reverse topological order
 	order []string
@@ -51,7 +52,7 @@ func ExampleDepthFirstVisit() {
 
 	// create a distance visitor
 	vis := &toposortVisitor{
-		DfsVisitorNoOp: graph.DfsVisitorNoOp{},
+		DfsNoOp: visitor.DfsNoOp{},
 	}
 
 	// Run the breadth-first visit

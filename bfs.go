@@ -153,15 +153,3 @@ func BreadthFirstSearch(g Forward, vis BfsVisitor, source, target string) {
 		cmap[v] = black
 	}
 }
-
-// BfsVisitorNoOp is a BfsVisitor which does nothing.
-type BfsVisitorNoOp struct{}
-
-func (v BfsVisitorNoOp) DiscoverVertex(string)      {}
-func (v BfsVisitorNoOp) ExamineVertex(string)       {}
-func (v BfsVisitorNoOp) ExamineEdge(string, string) {}
-func (v BfsVisitorNoOp) TreeEdge(string, string)    {}
-func (v BfsVisitorNoOp) NonTreeEdge(string, string) {}
-func (v BfsVisitorNoOp) GrayTarget(string, string)  {}
-func (v BfsVisitorNoOp) BlackTarget(string, string) {}
-func (v BfsVisitorNoOp) FinishVertex(string)        {}
