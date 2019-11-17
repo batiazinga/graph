@@ -37,6 +37,9 @@ type BfsVisitor interface {
 // BreadthFirstVisit visits a graph starting from the source vertex
 // and visiting closer vertices first.
 //
+// The slice returned by calls to NextVertices is never modified.
+// So there is no risk of accidentally modifying g.
+//
 // At some event points the visitor is called.
 // An appropriate visitor can then compute distances and shortest paths.
 func BreadthFirstVisit(g Forward, vis BfsVisitor, source string) {
@@ -92,6 +95,9 @@ func BreadthFirstVisit(g Forward, vis BfsVisitor, source string) {
 
 // BreadthFirstSearch visits a graph starting from the source vertex.
 // It visits closer vertices first and stops when the target is discovered.
+//
+// The slice returned by calls to NextVertices is never modified.
+// So there is no risk of accidentally modifying g.
 //
 // At some event points the visitor is called.
 // An appropriate visitor can then compute distances and shortest paths.

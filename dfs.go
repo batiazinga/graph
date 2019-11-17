@@ -33,6 +33,9 @@ type DfsVisitor interface {
 // When possible, it chooses a vertex adjacent to the current vertex to visit next.
 // Otherwise it backtracks to the last vertex with unvisited adjacent vertices.
 //
+// The slice returned by calls to NextVertices is never modified.
+// So there is no risk of accidentally modifying g.
+//
 // At some event points the visitor is called.
 func DepthFirstVisitFrom(g Forward, vis DfsVisitor, source string) {
 	// init color map
@@ -70,6 +73,9 @@ func depthFirstVisitFrom(g Forward, vis DfsVisitor, cmap colorMap, source string
 
 // DepthFirstVisit is similar to DepthFirstVisitFrom but it visits the whole graph.
 // It needs a graph whose vertices can be listed.
+//
+// The slices returned by calls to NextVertices and Vertices are never modified.
+// So there is no risk of accidentally modifying g.
 func DepthFirstVisit(g VertexListForward, vis DfsVisitor) {
 	// visit vertices and init them
 	for _, v := range g.Vertices() {
