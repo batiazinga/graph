@@ -39,13 +39,13 @@ type DfsVisitor interface {
 // At some event points the visitor is called.
 func DepthFirstVisitFrom(g Forward, vis DfsVisitor, source string) {
 	// init color map
-	cmap := make(colorMap)
+	cmap := make(map[string]color)
 
 	depthFirstVisitFrom(g, vis, cmap, source)
 }
 
 // depthFirstVisitFrom recursively visits g.
-func depthFirstVisitFrom(g Forward, vis DfsVisitor, cmap colorMap, source string) {
+func depthFirstVisitFrom(g Forward, vis DfsVisitor, cmap map[string]color, source string) {
 	// Discover the source vertex and turn it to gray
 	vis.DiscoverVertex(source)
 	cmap[source] = gray
@@ -83,7 +83,7 @@ func DepthFirstVisit(g VertexListForward, vis DfsVisitor) {
 	}
 
 	// init color map
-	cmap := make(colorMap)
+	cmap := make(map[string]color)
 	// visit vertices and start a depth-first-visit from each one of them
 	for _, v := range g.Vertices() {
 		if cmap[v] == white {

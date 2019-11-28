@@ -14,7 +14,3 @@ const (
 	gray
 	black
 )
-
-// colorMap is a map from vertex id to color.
-// The default color is white so missing id is equivalent to white.
-type colorMap map[string]color

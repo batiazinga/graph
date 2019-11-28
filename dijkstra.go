@@ -52,7 +52,7 @@ func DijkstraTo(g WeightForward, vis DijkstraVisitor, source, target string) flo
 
 func dijkstra(g WeightForward, vis DijkstraVisitor, source string, target *string) distanceMap {
 	// init queue, color map and distance map
-	cmap := make(colorMap)
+	cmap := make(map[string]color)
 	dist := make(distanceMap)
 	queue := newPriorityQueue(dist)
 

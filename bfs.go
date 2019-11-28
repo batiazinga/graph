@@ -46,7 +46,7 @@ func BreadthFirstVisit(g Forward, vis BfsVisitor, source string) {
 	// queue implemented with a list
 	queue := list.New()
 	// init color map
-	cmap := make(colorMap)
+	cmap := make(map[string]color)
 
 	// discover the source vertex:
 	// it was white, it is now gray
@@ -108,7 +108,7 @@ func BreadthFirstSearch(g Forward, vis BfsVisitor, source, target string) {
 	// queue implemented with a list
 	queue := list.New()
 	// init color map
-	cmap := make(colorMap)
+	cmap := make(map[string]color)
 
 	// discover the source vertex:
 	// it was white, it is now gray
