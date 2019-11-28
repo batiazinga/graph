@@ -1,8 +1,6 @@
 /*
 Package graph provides some algorithms on graphs.
 
-It is inspired by the C++ Boost Graph Library.
-
 Visit:
 
   - breadth-first visit
@@ -10,10 +8,10 @@ Visit:
 
 Shortest distance:
 
-  - Dijkstra (TODO)
+  - Dijkstra
+  - A* (TODO)
   - Bellman-Ford (TODO)
   - Johnson all pairs (TODO)
-  - A* (TODO)
 
 Minimum Spanning Tree:
 
