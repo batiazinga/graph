@@ -23,3 +23,14 @@ func (v DfsNoOp) TreeEdge(string, string)         {}
 func (v DfsNoOp) BackEdge(string, string)         {}
 func (v DfsNoOp) ForwardCrossEdge(string, string) {}
 func (v DfsNoOp) FinishVertex(string)             {}
+
+// DijkstraNoOp is a DijkstraVisitor which does nothing.
+type DijkstraNoOp struct{}
+
+func (v DijkstraNoOp) DiscoverVertex(string)           {}
+func (v DijkstraNoOp) ExamineVertex(string)            {}
+func (v DijkstraNoOp) ExamineEdge(string, string)      {}
+func (v DijkstraNoOp) EdgeRelaxed(string, string)      {}
+func (v DijkstraNoOp) EdgeNotRelaxed(string, string)   {}
+func (v DijkstraNoOp) ForwardCrossEdge(string, string) {}
+func (v DijkstraNoOp) FinishVertex(string)             {}
