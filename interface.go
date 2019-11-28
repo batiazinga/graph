@@ -15,3 +15,12 @@ type VertexListForward interface {
 	// Vertices returns the list of vertices of the graph.
 	Vertices() []string
 }
+
+// WeightForward is a Forward graph
+// with float64 weights on its edges.
+type WeightForward interface {
+	Forward
+
+	// Weight return the weight of the edge.
+	Weight(from, to string) float64
+}
