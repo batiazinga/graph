@@ -43,54 +43,7 @@ type BfsVisitor interface {
 // At some event points the visitor is called.
 // An appropriate visitor can then compute distances and shortest paths.
 func BreadthFirstVisit(g Forward, vis BfsVisitor, source string) {
-	// queue implemented with a list
-	queue := list.New()
-	// init color map
-	cmap := make(map[string]color)
-
-	// discover the source vertex:
-	// it was white, it is now gray
-	vis.DiscoverVertex(source)
-	cmap[source] = gray    // mark as discovered
-	queue.PushBack(source) // enqueue
-
-	// visit
-	for queue.Len() != 0 {
-		// dequeue the front element
-		// and examine it
-		elt := queue.Front()
-		queue.Remove(elt)
-		v := elt.Value.(string)
-		vis.ExamineVertex(v)
-
-		// visit neighbours
-		for _, next := range g.NextVertices(v) {
-			// leave vertex v toward vertex next
-			// and examine the edge
-			vis.ExamineEdge(v, next)
-
-			// has next vertex already been discovered
-			if cmap[next] == white {
-				// vertex has not been discovered yet
-				vis.TreeEdge(v, next)
-				vis.DiscoverVertex(next)
-				cmap[next] = gray    // mark as discovered
-				queue.PushBack(next) //enqueue
-			} else {
-				vis.NonTreeEdge(v, next)
-				if cmap[next] == gray {
-					vis.GrayTarget(v, next)
-				} else {
-					vis.BlackTarget(v, next)
-				}
-			}
-		}
-
-		// All neighbours have been found
-		// There is nothing left to do with this vertex: turn it to black
-		vis.FinishVertex(v)
-		cmap[v] = black
-	}
+	breadthFirstSearch(g, vis, source, nil)
 }
 
 // BreadthFirstSearch visits a graph starting from the source vertex.
@@ -105,6 +58,10 @@ func BreadthFirstVisit(g Forward, vis BfsVisitor, source string) {
 // Methods TreeEdge(v, target) and DiscoverVertex(target) are called before the search stops.
 // If the target is not reachable from the source, it is equivalent to BreadthFisrtVisit.
 func BreadthFirstSearch(g Forward, vis BfsVisitor, source, target string) {
+	breadthFirstSearch(g, vis, source, &target)
+}
+
+func breadthFirstSearch(g Forward, vis BfsVisitor, source string, target *string) {
 	// queue implemented with a list
 	queue := list.New()
 	// init color map
@@ -116,6 +73,8 @@ func BreadthFirstSearch(g Forward, vis BfsVisitor, source, target string) {
 	cmap[source] = gray    // mark as discovered
 	queue.PushBack(source) // enqueue
 
+	// configure visit: are we looking for a target?
+	lookForTarget := target != nil
 	// visit
 	for queue.Len() != 0 {
 		// dequeue the front element
@@ -140,7 +99,7 @@ func BreadthFirstSearch(g Forward, vis BfsVisitor, source, target string) {
 				queue.PushBack(next) //enqueue
 
 				// stop if the new vertex is the target vertex
-				if next == target {
+				if lookForTarget && next == *target {
 					return
 				}
 			} else {
