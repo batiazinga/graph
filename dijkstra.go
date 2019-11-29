@@ -80,9 +80,9 @@ func dijkstra(g WeightForward, vis DijkstraVisitor, source string, target *strin
 			vis.ExamineEdge(v, next)
 
 			// if already visited, ignore it
-			// however we do not need to test this case
-			// - if graph is undirected, this never happens
-			// - if graph is directed, we have just found a longer path to next
+			if cmap[next] == black {
+				continue
+			}
 
 			tentative := dist.distance(v) + g.Weight(v, next)
 			if tentative < dist.distance(next) {
