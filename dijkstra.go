@@ -12,7 +12,7 @@ type DijkstraVisitor interface {
 	ExamineEdge(from, to string)
 
 	// EdgeRelaced is called when a shorter path to vertex 'to' is found
-	// of if it just discovered.
+	// or if it was just discovered.
 	EdgeRelaxed(from, to string)
 
 	// EdgeNotRelaxed is called when a longer path to vertex 'to' is found.
@@ -22,21 +22,26 @@ type DijkstraVisitor interface {
 	FinishVertex(v string)
 }
 
-// Dijkstra returns the distance map from the source vertex to any vertex in the graph.
+// Dijkstra visits the graph in Dijkstra order, i.e. closest vertices first.
+// It stops when all vertices reachable from the source have been visited.
+//
+// Shortest paths and distances can be computed thanks to an appropriate visitor.
 //
 // It works for both undirected and directed graphs with non-negative distances and is non destructive.
-// If some vertices cannot be reached from the source they are not in the distance map.
 //
 // The slice returned by calls to NextVertices is never modified.
 // So there is no risk of accidentally modifying g.
 //
 // If all weights are equal to one, use breadth-first-search with the appropriate visitor instead.
-func Dijkstra(g WeightForward, vis DijkstraVisitor, source string) map[string]float64 {
-	dmap := dijkstra(g, vis, source, nil)
-	return map[string]float64(dmap)
+func Dijkstra(g WeightForward, vis DijkstraVisitor, source string) {
+	dijkstra(g, vis, source, nil)
 }
 
-// DijkstraTo returns the distance from the source vertex to the target vertex.
+// DijkstraTo visits the graph in Dijkstra order, i.e. closest vertices first.
+// It stops when the target vertex has been found or
+// when all vertices reachable from the source have been visited.
+//
+// Shortest path and distance can be computed thanks to an appropriate visitor.
 //
 // It works for both undirected and directed graphs with non-negative distances and is non destructive.
 // It returns +Inf if the target cannot be reached from the source.
@@ -45,16 +50,14 @@ func Dijkstra(g WeightForward, vis DijkstraVisitor, source string) map[string]fl
 // or the number of visited vertices.
 //
 // If all weights are equal to one, use breadth-first-search with the appropriate visitor instead.
-func DijkstraTo(g WeightForward, vis DijkstraVisitor, source, target string) float64 {
-	dmap := dijkstra(g, vis, source, &target)
-	return dmap.distance(target)
+func DijkstraTo(g WeightForward, vis DijkstraVisitor, source, target string) {
+	dijkstra(g, vis, source, &target)
 }
 
-func dijkstra(g WeightForward, vis DijkstraVisitor, source string, target *string) distanceMap {
+func dijkstra(g WeightForward, vis DijkstraVisitor, source string, target *string) {
 	// init queue, color map and distance map
 	cmap := make(map[string]color)
-	dist := make(distanceMap)
-	queue := newPriorityQueue(dist)
+	queue := newPriorityQueue()
 
 	// discover the source vertex:
 	// it was white, it is now gray
@@ -67,12 +70,12 @@ func dijkstra(g WeightForward, vis DijkstraVisitor, source string, target *strin
 	// visit
 	for queue.Len() != 0 {
 		// pop closest vertex and examine it
-		v := queue.pop()
+		v, d := queue.pop()
 		vis.ExamineVertex(v)
 
 		// stop here if the target vertex has been found
 		if lookForTarget && v == *target {
-			return dist
+			return
 		}
 
 		// visit neighbours
@@ -84,8 +87,8 @@ func dijkstra(g WeightForward, vis DijkstraVisitor, source string, target *strin
 				continue
 			}
 
-			tentative := dist.distance(v) + g.Weight(v, next)
-			if tentative < dist.distance(next) {
+			tentative := d + g.Weight(v, next)
+			if tentative < queue.distance(next) {
 				// a shorter path to next has been found
 				vis.EdgeRelaxed(v, next)
 				if cmap[next] == white {
@@ -105,5 +108,5 @@ func dijkstra(g WeightForward, vis DijkstraVisitor, source string, target *strin
 		cmap[v] = black
 	}
 
-	return dist
+	return
 }

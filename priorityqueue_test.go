@@ -103,7 +103,7 @@ func TestPriorityQueue(t *testing.T) {
 		t.Run(
 			tc.name,
 			func(t *testing.T) {
-				q := newPriorityQueue(make(distanceMap))
+				q := newPriorityQueue()
 
 				// fill the priority queue
 				for _, itm := range tc.items {
@@ -117,7 +117,7 @@ func TestPriorityQueue(t *testing.T) {
 				// pop all elements
 				popped := make([]string, 0, q.Len())
 				for q.Len() > 0 {
-					name := q.pop()
+					name, _ := q.pop()
 					popped = append(popped, name)
 				}
 

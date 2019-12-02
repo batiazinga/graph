@@ -27,31 +27,26 @@ type dijkstraVisitorPath struct {
 
 	// information to build a path:
 	// predecessor map and target
-	pred   map[string]string
-	target string
+	pred map[string]string
 }
 
 func (vis *dijkstraVisitorPath) EdgeRelaxed(from, to string) {
 	vis.pred[to] = from
 }
 
-func (vis *dijkstraVisitorPath) init(source, target string) {
-	vis.target = target
-	vis.pred[source] = source // source is its own predecessor
-}
-
-func (vis *dijkstraVisitorPath) path() (p []string) {
+func (vis *dijkstraVisitorPath) path(source, target string) (p []string) {
 	// init search
-	v := vis.target
+	v := target
 	pred, found := vis.pred[v]
 	if !found {
-		return
+		return // did not reach target
 	}
 	p = append(p, v)
 
-	// loop as long as there is a predecessor
-	for v != pred {
-		v, pred = pred, vis.pred[pred]
+	// loop as long as v is in the map (source is not in the map)
+	for found {
+		v = pred
+		pred, found = vis.pred[v]
 		p = append(p, v)
 	}
 
@@ -92,13 +87,17 @@ func ExampleDijkstraTo() {
 		pred:         make(map[string]string),
 	}
 
-	// // init visitor and run the dikstra visit
-	vis.init("A", "E")
-	distance := graph.DijkstraTo(g, vis, "A", "E")
+	// run the dikstra visit
+	graph.DijkstraTo(g, vis, "A", "E")
 
 	// read results
+	path := vis.path("A", "E")
+	var distance float64
+	for i := 0; i < len(path)-1; i++ {
+		distance += g.Weight(path[i], path[i+1])
+	}
 	fmt.Printf("Distance from A to E is 0.4: %v\n", distance > 0.39 && distance < 0.41)
-	fmt.Printf("Path from A to E is %v", vis.path())
+	fmt.Printf("Path from A to E is %v", path)
 
 	// Output:
 	// Distance from A to E is 0.4: true
