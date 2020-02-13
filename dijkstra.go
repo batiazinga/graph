@@ -37,19 +37,8 @@ func Dijkstra(g WeightForward, vis DijkstraVisitor, source string) {
 	dijkstra(g, vis, source, nil)
 }
 
-// DijkstraTo visits the graph in Dijkstra order, i.e. closest vertices first.
-// It stops when the target vertex has been found or
-// when all vertices reachable from the source have been visited.
-//
-// Shortest path and distance can be computed thanks to an appropriate visitor.
-//
-// It works for both undirected and directed graphs with non-negative distances and is non destructive.
-// It returns +Inf if the target cannot be reached from the source.
-//
-// A visitor can be used to collect more information, for example the path from the source to the target
-// or the number of visited vertices.
-//
-// If all weights are equal to one, use breadth-first-search with the appropriate visitor instead.
+// DijkstraTo is similar to Dijkstra except that it stops when the target vertex has been reached.
+// If the target vertex is not-reachable from the source, it behaves exactly as Dijkstra.
 func DijkstraTo(g WeightForward, vis DijkstraVisitor, source, target string) {
 	dijkstra(g, vis, source, &target)
 }
